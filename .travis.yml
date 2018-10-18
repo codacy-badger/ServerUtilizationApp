@@ -1,8 +1,10 @@
 sudo: required
 
 language: cpp
+compiler: gcc
 
 matrix:
+  fast_finish: true
   include:
     - os: linux
       addons:
@@ -12,7 +14,7 @@ matrix:
           packages:
             - g++-6
       env:
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+        - MATRIX_EVAL="export CC=gcc-6 && export CXX=g++-6"
 
     - os: linux
       addons:
@@ -22,16 +24,24 @@ matrix:
           packages:
             - g++-7
       env:
-        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+        - MATRIX_EVAL="export CC=gcc-7 && export CXX=g++-7"
 
 before_install:
-    - eval "${MATRIX_EVAL}"
-    - sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
+      #- sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
+    - sudo add-apt-repository ppa:beineri/opt-qt-5.10.1-trusty -y
     - sudo apt-get update -qq
-    - sudo apt-get install qtbase5-dev qtdeclarative5-dev libqt5webkit5-dev libsqlite3-dev
-    - sudo apt-get install qt5-default qttools5-dev-tools
+      #- sudo apt-get install qtbase5-dev qtdeclarative5-dev libqt5webkit5-dev libsqlite3-dev
+      #- sudo apt-get install qt5-default qttools5-dev-tools
+    - sudo apt-get install -qq qt510base qt510multimedia qt510translations qt510tools
+    - source /opt/qt510/bin/qt510-env.sh 
+    - export QTHOME=/opt/qt510
+    - eval "${MATRIX_EVAL}"
+    - sudo update-alternatives --install /usr/bin/gcc gcc `which $CC` 50
+    - sudo update-alternatives --install /usr/bin/g++ g++ `which $CXX` 50
 
 script:
+    - g++ --version
+    - gcc --version
     - qmake -project
     - qmake ServerUtilization.pro
-    - make -j4
+    - make

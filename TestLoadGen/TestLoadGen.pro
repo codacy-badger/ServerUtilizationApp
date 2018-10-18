@@ -11,3 +11,5 @@ INCLUDEPATH += $$PWD/../UtilizationLib
 SOURCES +=  tst_testloadgen.cpp
 
 LIBS += -L../UtilizationLib -lUtilizationLib
+
+QMAKE_CXXFLAGS += -std=c++17
